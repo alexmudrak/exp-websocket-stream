@@ -1,0 +1,49 @@
+<h1>Test receiving</h1>
+<h2>WebSocket Stream</h2>
+
+<style>
+  video {
+    width: 320px;
+    height: 240px;
+    background: #666;
+  }
+</style>
+
+<body>
+  <video controls id="videoObjectHtml5ApiServer"></video>
+  <script>
+    var
+      video = document.getElementById('videoObjectHtml5ApiServer'),
+      socket = new WebSocket('ws://127.0.0.1:5050'),
+      mediaSource = new MediaSource(),
+      vid2url = URL.createObjectURL(mediaSource),
+      arrayOfBlobs = [],
+      sourceBuffer;
+
+    video.src = vid2url;
+
+    socket.addEventListener('message', function (event) {
+
+      arrayOfBlobs.push(event.data);
+      console.log()
+      readChunk();
+    });
+
+
+    mediaSource.addEventListener('sourceopen', function () {
+      var mediaSource = this;
+      console.log("open MediaSource")
+      sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
+    });
+
+
+    function readChunk() {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
+        reader.onload = null;
+      }
+      reader.readAsArrayBuffer(arrayOfBlobs.shift());
+    }
+  </script>
+</body>

@@ -1,0 +1,38 @@
+<style>
+  #videoObjectHtml5ApiServer {
+    width: 320px;
+    height: 240px;
+    background: #666;
+  }
+</style>
+</head>
+
+<body>
+  <video autoplay id="videoObjectHtml5ApiServer"></video>
+
+  <script type="application/javascript">
+    var
+      video = document.getElementById('videoObjectHtml5ApiServer');
+
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+        video.srcObject = stream;
+        var
+          recorderOptions = {
+            mimeType: 'video/webm; codecs=vp8'
+                },
+          mediaRecorder = new MediaRecorder(stream, recorderOptions), 
+          socket = new WebSocket('ws://127.0.0.1:5050/');
+        console.log("mediaRecorder2", mediaRecorder);
+
+        mediaRecorder.ondataavailable = function (e) {
+          if (e.data && e.data.size > 0) {
+            socket.send(e.data);
+          }
+        }
+
+        mediaRecorder.start(100);
+
+      }).catch(function (err) { console.log(err); });
+    }
+  </script>
