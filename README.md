@@ -1,4 +1,4 @@
-# Websoket testing Stream
+# Websocket testing Stream
 It's simple implementation of webcam streaming in browser using websocket.
 
 # How to use
